@@ -14,11 +14,6 @@ class SplashScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(0),
-        child: AppBar(),
-      ),
-      backgroundColor: Theme.of(context).primaryColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

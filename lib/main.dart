@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:menu/screens/home_screen.dart';
 import 'package:menu/screens/spash_screen.dart';
+import 'package:menu/theme_options.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,28 +16,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Pizzeria Fittizzio',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          appBarTheme: const AppBarTheme(
-            elevation: 0,
-            backgroundColor: Color.fromARGB(255, 218, 212, 205),
-            systemOverlayStyle: SystemUiOverlayStyle.dark,
-          ),
-          primaryColor: const Color.fromARGB(255, 218, 212, 205),
-          textTheme: const TextTheme(
-            bodyMedium: TextStyle(color: Colors.black),
-          ),
-        ),
-        darkTheme: ThemeData(
-          appBarTheme: const AppBarTheme(
-            systemOverlayStyle: SystemUiOverlayStyle.light,
-            elevation: 0,
-            backgroundColor: Color.fromARGB(255, 141, 2, 39),
-          ),
-          primaryColor: const Color.fromARGB(255, 141, 2, 39),
-          textTheme: const TextTheme(
-            bodyMedium: TextStyle(color: Colors.white),
-          ),
-        ),
+        theme: appLightTheme,
+        darkTheme: appDarkTheme,
         initialRoute: '/splash',
         routes: {
           '/': (context) => const HomeScreen(),
