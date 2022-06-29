@@ -20,17 +20,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    print("My App Build");
     return MaterialApp(
-        title: 'Pizzeria Fittizzio',
-        debugShowCheckedModeBanner: false,
-        theme: appLightTheme,
-        darkTheme: appDarkTheme,
-        initialRoute: '/splash',
-        routes: {
-          '/splash': (context) => const SplashScreen(),
-          '/': (context) => const HomeScreen(),
-          '/category': (context) => const CategoryScreen()
-        });
+      title: 'Pizzeria Fittizzio',
+      debugShowCheckedModeBanner: false,
+      theme: appLightTheme,
+      darkTheme: appDarkTheme,
+      initialRoute: '/splash',
+      routes: {
+        '/splash': (context) => const SplashScreen(),
+        '/home': (context) => const HomeScreen(),
+        '/category': (context) => const CategoryScreen()
+      },
+    );
   }
 }
