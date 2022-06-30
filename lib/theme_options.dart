@@ -10,8 +10,10 @@ var secondaryColorLight = Colors.white;
 var primaryColorDark = const Color.fromARGB(255, 50, 64, 64);
 var secondaryColorDark = Colors.grey[900]!;
 
-var colorSchemeLight =
-    ColorScheme.light(secondary: Colors.white, background: primaryColorLight);
+var colorSchemeLight = ColorScheme.light(
+    secondary: Colors.white,
+    background: primaryColorLight,
+    primary: Colors.black);
 var colorSchemeDark = ColorScheme.dark(
     secondary: secondaryColorDark, background: primaryColorDark);
 
@@ -26,9 +28,8 @@ var appLightTheme = ThemeData(
     systemOverlayStyle: SystemUiOverlayStyle.light,
   ),
   primaryColor: colorSchemeLight.primary,
-  textTheme: TextTheme(
-    bodyMedium: const TextStyle(color: Colors.black),
-    titleMedium: GoogleFonts.smooch(fontSize: 24, color: Colors.white),
+  textTheme: const TextTheme(
+    bodyMedium: TextStyle(color: Colors.black),
   ),
 );
 
@@ -43,8 +44,7 @@ var appDarkTheme = ThemeData(
     systemOverlayStyle: SystemUiOverlayStyle.light,
   ),
   primaryColor: colorSchemeDark.primary,
-  textTheme: TextTheme(
-    bodyMedium: const TextStyle(color: Colors.white),
-    titleMedium: GoogleFonts.smooch(fontSize: 24, color: Colors.white),
+  textTheme: const TextTheme(
+    bodyMedium: TextStyle(color: Colors.white),
   ),
 );

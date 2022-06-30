@@ -14,94 +14,104 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     context.read<HomeCategoriesBloc>().add(HomeCategoriesFetchEvent());
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const MenuAppBarHeader(),
-      ),
-      body: MenuBody(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                "In evidenza",
-                style: GoogleFonts.mulish(),
-              ),
-            ),
-            BlocBuilder<HomeCategoriesBloc, HomeCategoriesState>(
-              builder: (context, state) {
-                if (state is HomeCategoriesFetchState) {
-                  return Container(
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: SafeArea(
+        bottom: false,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const MenuAppBarHeader(),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: MenuBody(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
                     padding: const EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Categorie",
-                          style: GoogleFonts.mulish(),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: SizedBox(
-                            height: 150,
-                            child: CustomScrollView(
-                              scrollDirection: Axis.horizontal,
-                              primary: false,
-                              slivers: [
-                                SliverGrid(
-                                  gridDelegate:
-                                      const SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 140,
-                                    mainAxisSpacing: 10.0,
-                                    crossAxisSpacing: 10.0,
-                                    mainAxisExtent: 150,
-                                    childAspectRatio: 1 / 1,
-                                  ),
-                                  delegate: SliverChildBuilderDelegate(
-                                    (BuildContext context, int index) {
-                                      return HomeCategoryWidget(
-                                          item: state.items!.elementAt(index));
-                                    },
-                                    childCount: state.items!.length,
+                    child: Text(
+                      "In evidenza",
+                      style: GoogleFonts.mulish(),
+                    ),
+                  ),
+                  BlocBuilder<HomeCategoriesBloc, HomeCategoriesState>(
+                    builder: (context, state) {
+                      if (state is HomeCategoriesFetchState) {
+                        return Container(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Categorie",
+                                style: GoogleFonts.mulish(),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: SizedBox(
+                                  height: 150,
+                                  child: CustomScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    primary: false,
+                                    slivers: [
+                                      SliverGrid(
+                                        gridDelegate:
+                                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                                          maxCrossAxisExtent: 140,
+                                          mainAxisSpacing: 10.0,
+                                          crossAxisSpacing: 10.0,
+                                          mainAxisExtent: 150,
+                                          childAspectRatio: 1 / 1,
+                                        ),
+                                        delegate: SliverChildBuilderDelegate(
+                                          (BuildContext context, int index) {
+                                            return HomeCategoryWidget(
+                                                item: state.items!
+                                                    .elementAt(index));
+                                          },
+                                          childCount: state.items!.length,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ],
-                            ),
+                              )
+                            ],
                           ),
-                        )
-                      ],
-                    ),
-                  );
-                } else {
-                  return Container(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Categorie",
-                          style: GoogleFonts.mulish(),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: CircularProgressIndicator(),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  );
-                }
-              },
-            )
-          ],
+                        );
+                      } else {
+                        return Container(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Categorie",
+                                style: GoogleFonts.mulish(),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: CircularProgressIndicator(),
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
+                        );
+                      }
+                    },
+                  )
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

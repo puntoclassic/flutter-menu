@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:menu/bloc/foods_by_category_bloc.dart';
 import 'package:menu/bloc/home_categories_bloc.dart';
 import 'package:menu/screens/category_screen.dart';
 import 'package:menu/screens/home_screen.dart';
@@ -10,6 +11,9 @@ void main() {
   runApp(MultiBlocProvider(providers: [
     BlocProvider(
       create: (context) => HomeCategoriesBloc(),
+    ),
+    BlocProvider(
+      create: (context) => FoodsByCategoryBloc(),
     )
   ], child: const MyApp()));
 }
@@ -25,7 +29,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: appLightTheme,
       darkTheme: appDarkTheme,
-      initialRoute: '/splash',
+      initialRoute: "/splash",
       routes: {
         '/splash': (context) => const SplashScreen(),
         '/home': (context) => const HomeScreen(),
