@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:menu/bloc/foods_by_category_bloc.dart';
 import 'package:menu/models/category_item.dart';
 import 'package:menu/widgets/menu_body.dart';
+
+import '../widgets/category_screen_header.dart';
 
 class CategoryScreen extends StatelessWidget {
   const CategoryScreen({Key? key}) : super(key: key);
@@ -50,11 +53,44 @@ class CategoryScreenBody extends StatelessWidget {
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Container(
-                          height: 40,
-                          color: Colors.red,
+                      return Container(
+                        height: 50,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(state.items!.elementAt(index).name),
+                                  Text(
+                                    state.items!.elementAt(index).ingredients,
+                                    style:
+                                        GoogleFonts.gentiumBasic(fontSize: 12),
+                                  )
+                                ],
+                              ),
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text("${state.items!.elementAt(index).price} €")
+                              ],
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(Icons.add_shopping_cart),
+                                )
+                              ],
+                            )
+                          ],
                         ),
                       );
                     },
@@ -74,77 +110,21 @@ class CategoryScreenBody extends StatelessWidget {
   }
 }
 
-class CategoryScreenHeader extends StatelessWidget {
-  const CategoryScreenHeader({
-    Key? key,
-    required this.categoryItem,
-  }) : super(key: key);
-
-  final CategoryItem categoryItem;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 300,
-      child: Stack(
-        children: [
-          Hero(
-            tag: categoryItem.id,
-            child: Container(
-              decoration: BoxDecoration(
-                image: categoryItem.imageUrl != null
-                    ? DecorationImage(
-                        image: Image.network(categoryItem.imageUrl!).image,
-                        fit: BoxFit.cover)
-                    : null,
-              ),
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).viewPadding.top,
-            ),
-            child: Column(
-              children: [
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    child: IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon:
-                            const Icon(Icons.arrow_back, color: Colors.white)),
-                  ),
-                )
-              ],
-            ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Container(
-                padding: const EdgeInsets.only(left: 16),
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.3),
-                ),
-                width: double.infinity,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      categoryItem.name,
-                      style: const TextStyle(fontSize: 24, color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
-  }
-}
+/**
+ * Row(
+                                children: [
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        
+                                       
+                                      ],
+                                    ),
+                                  ),
+                                  
+                                ],
+                              ),
+                             
+ */
