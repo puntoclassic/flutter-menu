@@ -21,6 +21,14 @@ class HomeScreen extends StatelessWidget {
         child: Scaffold(
           appBar: AppBar(
             title: const MenuAppBarHeader(),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.account_circle_outlined),
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/account');
+                },
+              )
+            ],
           ),
           body: Padding(
             padding: const EdgeInsets.only(top: 16),
