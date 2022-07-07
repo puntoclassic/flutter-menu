@@ -15,3 +15,5 @@ class SigninRequestEvent extends SigninEvent {
       required this.email,
       required this.password});
 }
+
+class SigninResetEvent extends SigninEvent {}

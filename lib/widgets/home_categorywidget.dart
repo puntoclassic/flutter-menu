@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:menu/app_options.dart';
 
 import '../models/category_item.dart';
 
@@ -34,7 +35,9 @@ class HomeCategoryWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                     image: item.imageUrl != null
                         ? DecorationImage(
-                            image: Image.network(item.imageUrl!).image,
+                            image:
+                                Image.network("$mediaBaseUrl/${item.imageUrl!}")
+                                    .image,
                             fit: BoxFit.cover)
                         : null,
                     borderRadius: BorderRadius.circular(5)),

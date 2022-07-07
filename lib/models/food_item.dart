@@ -3,7 +3,7 @@ class FoodItem {
   String name = "";
   String ingredients = "";
   String? imageUrl;
-  double price = 0.00;
+  num price = 0.00;
 
   FoodItem(
       {required this.id,
@@ -14,10 +14,10 @@ class FoodItem {
 
   static FoodItem fromJson(e) {
     return FoodItem(
-        id: e["id"],
+        id: int.parse(e["pk"].toString()),
         name: e["name"],
         imageUrl: e["image"],
         ingredients: e["ingredients"] ?? "",
-        price: double.parse(e["price"]));
+        price: num.tryParse(e["price"].toString())!);
   }
 }

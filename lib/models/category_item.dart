@@ -6,6 +6,7 @@ class CategoryItem {
   CategoryItem({required this.id, required this.name, this.imageUrl});
 
   static CategoryItem fromJson(e) {
-    return CategoryItem(id: e["id"], name: e["name"], imageUrl: e["image"]);
+    return CategoryItem(
+        id: int.parse(e["id"]), name: e["name"], imageUrl: e["imageUrl"]);
   }
 }
