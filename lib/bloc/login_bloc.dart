@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:meta/meta.dart';
 
 import '../app_options.dart';
@@ -9,11 +8,7 @@ part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  late final GraphQLClient client;
-
   LoginBloc() : super(LoginInitial()) {
-    client = GraphQLClient(
-        link: HttpLink('$apiBaseUrl/graphql'), cache: GraphQLCache());
     on<LoginEvent>((event, emit) async {
       if (event is LoginRequestEvent) {
         emit(

@@ -42,7 +42,7 @@ class SigninBloc extends Bloc<SigninEvent, SigninState> {
           } else if (requestResponse["status"] == "User created") {
             emit(SigninRequestState(status: SigninStatus.ok));
           } else {}
-        } on DioError catch (e) {
+        } on DioError {
           emit(SigninRequestState(status: SigninStatus.error));
         }
       }

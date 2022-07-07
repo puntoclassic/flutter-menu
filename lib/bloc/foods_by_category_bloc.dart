@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:menu/models/food_item.dart';
 import 'package:meta/meta.dart';
 
