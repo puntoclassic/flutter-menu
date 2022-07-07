@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:dio/dio.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:menu/models/food_item.dart';
 import 'package:meta/meta.dart';
@@ -10,33 +11,15 @@ part 'foods_by_category_state.dart';
 
 class FoodsByCategoryBloc
     extends Bloc<FoodsByCategoryEvent, FoodsByCategoryState> {
-  late final GraphQLClient client;
-
   FoodsByCategoryBloc() : super(FoodsByCategoryInitial()) {
-    client = GraphQLClient(
-      link: HttpLink('$apiBaseUrl/graphql'),
-      cache: GraphQLCache(),
-    );
     on<FoodsByCategoryEvent>((event, emit) async {
       if (event is FoodsByCategoryFetchEvent) {
         final categoryId = event.categoryId;
 
-        var query = """
- {
-  foodsByCategory(categoryId:$categoryId) {
-    pk
-    name
-    ingredients
-    price
-  }
- }
-""";
+        var response =
+            await Dio().get("$apiBaseUrl/webapi/categories/$categoryId/foods");
 
-        var qlResponse = await client.query(
-          QueryOptions(document: gql(query)),
-        );
-
-        var items = qlResponse.data!["foodsByCategory"]
+        var items = response.data!
             ?.map<FoodItem>(
               (e) => FoodItem.fromJson(e),
             )

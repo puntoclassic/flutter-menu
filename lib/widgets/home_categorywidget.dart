@@ -35,9 +35,7 @@ class HomeCategoryWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                     image: item.imageUrl != null
                         ? DecorationImage(
-                            image:
-                                Image.network("$mediaBaseUrl/${item.imageUrl!}")
-                                    .image,
+                            image: Image.network(item.imageUrl!).image,
                             fit: BoxFit.cover)
                         : null,
                     borderRadius: BorderRadius.circular(5)),

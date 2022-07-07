@@ -7,6 +7,8 @@ class CategoryItem {
 
   static CategoryItem fromJson(e) {
     return CategoryItem(
-        id: int.parse(e["id"]), name: e["name"], imageUrl: e["imageUrl"]);
+        id: int.parse(e["id"].toString()),
+        name: e["name"],
+        imageUrl: e["image"]);
   }
 }

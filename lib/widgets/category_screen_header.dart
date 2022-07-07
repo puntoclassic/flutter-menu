@@ -23,9 +23,7 @@ class CategoryScreenHeader extends StatelessWidget {
               decoration: BoxDecoration(
                 image: categoryItem.imageUrl != null
                     ? DecorationImage(
-                        image: Image.network(
-                                "$mediaBaseUrl/${categoryItem.imageUrl!}")
-                            .image,
+                        image: Image.network(categoryItem.imageUrl!).image,
                         fit: BoxFit.cover)
                     : null,
               ),

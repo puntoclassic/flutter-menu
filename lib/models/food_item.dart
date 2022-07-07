@@ -14,7 +14,7 @@ class FoodItem {
 
   static FoodItem fromJson(e) {
     return FoodItem(
-        id: int.parse(e["pk"].toString()),
+        id: int.parse(e["id"].toString()),
         name: e["name"],
         imageUrl: e["image"],
         ingredients: e["ingredients"] ?? "",

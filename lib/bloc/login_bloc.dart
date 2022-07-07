@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:dio/dio.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:meta/meta.dart';
 
@@ -21,23 +22,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           ),
         );
 
-        var query = r""" 
- query Login($email:String!,$password:String!){
-    login(email:$email,password:$password) 
-  } 
-""";
-        var qlResponse = await client.query(
-          QueryOptions(
-            document: gql(query),
-            variables: {
-              "email": event.email,
-              "password": event.password,
-            },
-            fetchPolicy: FetchPolicy.noCache,
-          ),
-        );
+        var request = await Dio().post("$apiBaseUrl/webapi/user/login/", data: {
+          "email": event.email,
+          "password": event.password,
+        });
 
-        var requestResponse = qlResponse.data!["login"];
+        var requestResponse = request.data;
 
         if (requestResponse["status"] == "Login failed") {
           emit(LoginRequestState(status: LoginStatus.badLogin));
