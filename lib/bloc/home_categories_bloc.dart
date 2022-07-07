@@ -12,7 +12,7 @@ class HomeCategoriesBloc
   HomeCategoriesBloc() : super(HomeCategoriesInitial()) {
     on<HomeCategoriesEvent>((event, emit) async {
       if (event is HomeCategoriesFetchEvent) {
-        var response = await Dio().get("$apiBaseUrl/webapi/categories/");
+        var response = await Dio().get("$apiBaseUrl/api/categories/");
         var items = response.data!
             ?.map<CategoryItem>(
               (e) => CategoryItem.fromJson(e),

@@ -17,7 +17,7 @@ class FoodsByCategoryBloc
         final categoryId = event.categoryId;
 
         var response =
-            await Dio().get("$apiBaseUrl/webapi/categories/$categoryId/foods");
+            await Dio().get("$apiBaseUrl/api/categories/$categoryId/foods");
 
         var items = response.data!
             ?.map<FoodItem>(
