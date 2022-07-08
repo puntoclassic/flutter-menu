@@ -15,9 +15,11 @@ class CategoryScreen extends ConsumerWidget {
     CategoryItem categoryItem =
         ModalRoute.of(context)!.settings.arguments as CategoryItem;
 
-    ref
-        .read(foodProvider.notifier)
-        .fetchFoodsByCategory(categoryItem.id.toString());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(foodProvider.notifier)
+          .fetchFoodsByCategory(categoryItem.id.toString());
+    });
 
     return Scaffold(
       body: MenuBody(
@@ -47,53 +49,56 @@ class CategoryScreenBody extends ConsumerWidget {
         ref.watch(foodProvider.select((value) => value.foodsByCategory));
 
     if (items.isNotEmpty) {
-      return CustomScrollView(
-        slivers: [
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                return SizedBox(
-                  height: 50,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: CustomScrollView(
+          slivers: [
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  return SizedBox(
+                    height: 50,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(items.elementAt(index).name),
+                              Text(
+                                items.elementAt(index).ingredients,
+                                style: GoogleFonts.gentiumBasic(fontSize: 12),
+                              )
+                            ],
+                          ),
+                        ),
+                        Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [Text("${items.elementAt(index).price} €")],
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(items.elementAt(index).name),
-                            Text(
-                              items.elementAt(index).ingredients,
-                              style: GoogleFonts.gentiumBasic(fontSize: 12),
+                            IconButton(
+                              onPressed: () {},
+                              icon: const Icon(Icons.add_shopping_cart),
                             )
                           ],
-                        ),
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [Text("${items.elementAt(index).price} €")],
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.add_shopping_cart),
-                          )
-                        ],
-                      )
-                    ],
-                  ),
-                );
-              },
-              childCount: items.length,
-            ),
-          )
-        ],
+                        )
+                      ],
+                    ),
+                  );
+                },
+                childCount: items.length,
+              ),
+            )
+          ],
+        ),
       );
     } else {
       return const Padding(
