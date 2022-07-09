@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:menu/providers/account_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:menu/bloc/login_bloc.dart';
+import 'package:menu/bloc/signin_bloc.dart';
 import 'package:menu/widgets/menu_body.dart';
 
-import '../models/account_state.dart';
-
-class LoginScreen extends ConsumerWidget {
+class LoginScreen extends StatelessWidget {
   LoginScreen({Key? key}) : super(key: key);
 
   final _formKey = GlobalKey<FormState>();
@@ -14,11 +13,8 @@ class LoginScreen extends ConsumerWidget {
   final passwordController = TextEditingController();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final loginStatus =
-        ref.watch(accountProvider.select((value) => value.loginStatus));
-
-    Center loginForm = Center(
+  Widget build(BuildContext context) {
+    var loginForm = Center(
       child: Container(
         padding: const EdgeInsets.all(32),
         child: Form(
@@ -72,7 +68,9 @@ class LoginScreen extends ConsumerWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      ref.read(accountProvider.notifier).signinReset();
+                      context.read<SigninBloc>().add(
+                            SigninResetEvent(),
+                          );
                       Navigator.pushNamed(context, "/account/signin");
                     },
                     child: const Text("Crea account"),
@@ -80,9 +78,9 @@ class LoginScreen extends ConsumerWidget {
                   OutlinedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        ref.read(accountProvider.notifier).login(
+                        context.read<LoginBloc>().add(LoginRequestEvent(
                             email: emailController.text,
-                            password: passwordController.text);
+                            password: passwordController.text));
                       }
                     },
                     child: const Text("Accedi"),
@@ -95,39 +93,6 @@ class LoginScreen extends ConsumerWidget {
       ),
     );
 
-    Widget content = loginForm;
-
-    switch (loginStatus) {
-      case LoginStatus.none:
-        break;
-      case LoginStatus.ok:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Accesso effettuato"),
-          ),
-        );
-        break;
-      case LoginStatus.pending:
-        content = const Center(
-          child: CircularProgressIndicator(),
-        );
-        break;
-      case LoginStatus.error:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Si è verificato un errore inaspettato"),
-          ),
-        );
-        break;
-      case LoginStatus.badLogin:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Nome utente o password errata"),
-          ),
-        );
-        break;
-    }
-
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: SafeArea(
@@ -138,7 +103,38 @@ class LoginScreen extends ConsumerWidget {
           ),
           body: Padding(
             padding: const EdgeInsets.only(top: 16),
-            child: MenuBody(child: content),
+            child: MenuBody(
+              child: BlocConsumer<LoginBloc, LoginState>(
+                  builder: (context, state) {
+                return loginForm;
+              }, listener: (context, state) {
+                if (state is LoginRequestState) {
+                  if (state.status == LoginStatus.badLogin) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Nome utente o password errata"),
+                      ),
+                    );
+                  }
+
+                  if (state.status == LoginStatus.ok) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Accesso effettuato"),
+                      ),
+                    );
+                  }
+
+                  if (state.status == LoginStatus.error) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Si è verificato un errore inaspettato"),
+                      ),
+                    );
+                  }
+                }
+              }),
+            ),
           ),
         ),
       ),

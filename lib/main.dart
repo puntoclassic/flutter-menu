@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:menu/bloc/account_bloc.dart';
+import 'package:menu/bloc/foods_by_category_bloc.dart';
+import 'package:menu/bloc/home_categories_bloc.dart';
+import 'package:menu/bloc/login_bloc.dart';
+import 'package:menu/bloc/signin_bloc.dart';
 import 'package:menu/screens/account_screen.dart';
 import 'package:menu/screens/category_screen.dart';
 import 'package:menu/screens/home_screen.dart';
@@ -10,7 +15,26 @@ import 'package:menu/theme_options.dart';
 
 void main() {
   runApp(
-    const ProviderScope(child: MyApp()),
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => HomeCategoriesBloc(),
+        ),
+        BlocProvider(
+          create: (context) => FoodsByCategoryBloc(),
+        ),
+        BlocProvider(
+          create: (context) => AccountBloc(),
+        ),
+        BlocProvider(
+          create: (context) => SigninBloc(),
+        ),
+        BlocProvider(
+          create: (context) => LoginBloc(),
+        )
+      ],
+      child: const MyApp(),
+    ),
   );
 }
 

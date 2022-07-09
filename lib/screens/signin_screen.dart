@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:menu/providers/account_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:menu/bloc/signin_bloc.dart';
 import 'package:menu/widgets/menu_body.dart';
 
-import '../models/account_state.dart';
-
-class SigninScreen extends ConsumerWidget {
+class SigninScreen extends StatelessWidget {
   SigninScreen({Key? key}) : super(key: key);
 
   final _formKey = GlobalKey<FormState>();
@@ -15,54 +13,58 @@ class SigninScreen extends ConsumerWidget {
   final passwordController = TextEditingController();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final signinRequestState =
-        ref.watch(accountProvider.select((value) => value.signinStatus));
-    Widget content = signinForm(ref);
-
-    switch (signinRequestState) {
-      case SigninStatus.none:
-        // TODO: Handle this case.
-        break;
-      case SigninStatus.ok:
-        content = signinOk();
-        break;
-      case SigninStatus.pending:
-        content = pendingRequest();
-        break;
-      case SigninStatus.error:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Si è verificato un errore"),
+  Widget build(BuildContext context) {
+    return BlocConsumer<SigninBloc, SigninState>(
+      builder: (context, state) {
+        return Container(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: SafeArea(
+            bottom: false,
+            child: Scaffold(
+              appBar: AppBar(
+                title: const Text("Crea account"),
+              ),
+              body: Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: MenuBody(child: BlocBuilder<SigninBloc, SigninState>(
+                  builder: (context, state) {
+                    if (state is SigninRequestState) {
+                      if (state.status == SigninStatus.none) {
+                        return signinForm(context);
+                      }
+                      if (state.status == SigninStatus.pending) {
+                        return pendingRequest();
+                      }
+                      if (state.status == SigninStatus.ok) {
+                        return signinOk();
+                      }
+                    }
+                    return signinForm(context);
+                  },
+                )),
+              ),
+            ),
           ),
         );
-        break;
-      case SigninStatus.badPassword:
-        // TODO: Handle this case.
-        break;
-      case SigninStatus.emailBusy:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Email in uso"),
-          ),
-        );
-        break;
-    }
-
-    return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: SafeArea(
-        bottom: false,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text("Crea account"),
-          ),
-          body: Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: MenuBody(child: content),
-          ),
-        ),
-      ),
+      },
+      listener: (context, state) {
+        if (state is SigninRequestState) {
+          if (state.status == SigninStatus.emailBusy) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Email in uso"),
+              ),
+            );
+          }
+          if (state.status == SigninStatus.error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Si è verificato un errore"),
+              ),
+            );
+          }
+        }
+      },
     );
   }
 
@@ -88,7 +90,7 @@ class SigninScreen extends ConsumerWidget {
     return const Center(child: CircularProgressIndicator());
   }
 
-  Center signinForm(WidgetRef ref) {
+  Center signinForm(BuildContext context) {
     return Center(
       child: Container(
         padding: const EdgeInsets.all(32),
@@ -202,11 +204,13 @@ class SigninScreen extends ConsumerWidget {
                     ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          ref.read(accountProvider.notifier).signin(
-                                firstname: firstNameController.value.text,
-                                lastname: lastNameController.value.text,
-                                email: emailController.value.text,
-                                password: passwordController.value.text,
+                          context.read<SigninBloc>().add(
+                                SigninRequestEvent(
+                                  firstName: firstNameController.value.text,
+                                  lastName: lastNameController.value.text,
+                                  email: emailController.value.text,
+                                  password: passwordController.value.text,
+                                ),
                               );
                         }
                       },
