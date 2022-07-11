@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:menu/bloc/login_bloc.dart';
-import 'package:menu/bloc/signin_bloc.dart';
 import 'package:menu/widgets/menu_body.dart';
+
+import '../bloc/account_bloc.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({Key? key}) : super(key: key);
@@ -68,8 +68,8 @@ class LoginScreen extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      context.read<SigninBloc>().add(
-                            SigninResetEvent(),
+                      context.read<AccountBloc>().add(
+                            AccountSigninResetEvent(),
                           );
                       Navigator.pushNamed(context, "/account/signin");
                     },
@@ -78,9 +78,10 @@ class LoginScreen extends StatelessWidget {
                   OutlinedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        context.read<LoginBloc>().add(LoginRequestEvent(
-                            email: emailController.text,
-                            password: passwordController.text));
+                        context.read<AccountBloc>().add(
+                            AccountLoginRequestEvent(
+                                email: emailController.text,
+                                password: passwordController.text));
                       }
                     },
                     child: const Text("Accedi"),
@@ -104,11 +105,11 @@ class LoginScreen extends StatelessWidget {
           body: Padding(
             padding: const EdgeInsets.only(top: 16),
             child: MenuBody(
-              child: BlocConsumer<LoginBloc, LoginState>(
+              child: BlocConsumer<AccountBloc, AccountState>(
                   builder: (context, state) {
                 return loginForm;
               }, listener: (context, state) {
-                if (state is LoginRequestState) {
+                if (state is AccountLoginRequestState) {
                   if (state.status == LoginStatus.badLogin) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(

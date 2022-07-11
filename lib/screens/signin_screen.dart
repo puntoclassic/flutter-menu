@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:menu/bloc/signin_bloc.dart';
+import 'package:menu/bloc/account_bloc.dart';
 import 'package:menu/widgets/menu_body.dart';
 
 class SigninScreen extends StatelessWidget {
@@ -14,7 +14,7 @@ class SigninScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<SigninBloc, SigninState>(
+    return BlocConsumer<AccountBloc, AccountState>(
       builder: (context, state) {
         return Container(
           color: Theme.of(context).scaffoldBackgroundColor,
@@ -26,9 +26,9 @@ class SigninScreen extends StatelessWidget {
               ),
               body: Padding(
                 padding: const EdgeInsets.only(top: 16),
-                child: MenuBody(child: BlocBuilder<SigninBloc, SigninState>(
+                child: MenuBody(child: BlocBuilder<AccountBloc, AccountState>(
                   builder: (context, state) {
-                    if (state is SigninRequestState) {
+                    if (state is AccountSigninRequestState) {
                       if (state.status == SigninStatus.none) {
                         return signinForm(context);
                       }
@@ -48,7 +48,7 @@ class SigninScreen extends StatelessWidget {
         );
       },
       listener: (context, state) {
-        if (state is SigninRequestState) {
+        if (state is AccountSigninRequestState) {
           if (state.status == SigninStatus.emailBusy) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -204,8 +204,8 @@ class SigninScreen extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          context.read<SigninBloc>().add(
-                                SigninRequestEvent(
+                          context.read<AccountBloc>().add(
+                                AccountSigninRequestEvent(
                                   firstName: firstNameController.value.text,
                                   lastName: lastNameController.value.text,
                                   email: emailController.value.text,
