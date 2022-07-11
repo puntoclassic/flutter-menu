@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -7,6 +6,8 @@ import '../providers/category_provider.dart';
 import 'home_categorywidget.dart';
 
 class HomeCategoryContent extends ConsumerWidget {
+  const HomeCategoryContent({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final homeCategories =

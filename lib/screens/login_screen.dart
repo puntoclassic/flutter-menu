@@ -20,11 +20,9 @@ class LoginScreen extends ConsumerWidget {
       case LoginStatus.none:
         break;
       case LoginStatus.ok:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Accesso effettuato"),
-          ),
-        );
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          Navigator.pushReplacementNamed(context, "/account");
+        });
         break;
       case LoginStatus.pending:
         content = const Center(
@@ -32,11 +30,13 @@ class LoginScreen extends ConsumerWidget {
         );
         break;
       case LoginStatus.error:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Si è verificato un errore inaspettato"),
-          ),
-        );
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Si è verificato un errore inaspettato"),
+            ),
+          );
+        });
         break;
       case LoginStatus.badLogin:
         ScaffoldMessenger.of(context).showSnackBar(

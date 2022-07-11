@@ -22,7 +22,6 @@ class SigninScreen extends ConsumerWidget {
 
     switch (signinRequestState) {
       case SigninStatus.none:
-        // TODO: Handle this case.
         break;
       case SigninStatus.ok:
         content = signinOk();
@@ -38,7 +37,6 @@ class SigninScreen extends ConsumerWidget {
         );
         break;
       case SigninStatus.badPassword:
-        // TODO: Handle this case.
         break;
       case SigninStatus.emailBusy:
         ScaffoldMessenger.of(context).showSnackBar(

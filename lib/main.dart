@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
         '/category': (context) => const CategoryScreen(),
         '/account': (context) => const AccountScreen(),
         '/account/signin': (context) => SigninScreen(),
-        '/account/login': (context) => LoginScreen()
+        '/account/login': (context) => const LoginScreen()
       },
     );
   }

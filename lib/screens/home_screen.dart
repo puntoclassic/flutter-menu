@@ -44,7 +44,7 @@ class HomeScreen extends ConsumerWidget {
                       style: GoogleFonts.mulish(),
                     ),
                   ),
-                  HomeCategoryContent()
+                  const HomeCategoryContent()
                 ],
               ),
             ),

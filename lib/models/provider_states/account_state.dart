@@ -7,12 +7,18 @@ class AccountState {
   LoginStatus loginStatus = LoginStatus.none;
   bool userIsLogged = false;
 
-  AccountState({required this.signinStatus, required this.loginStatus});
+  AccountState(
+      {required this.signinStatus,
+      required this.loginStatus,
+      required this.userIsLogged});
 
   AccountState copyWith(
-      {SigninStatus? signinStatus, LoginStatus? loginStatus}) {
+      {SigninStatus? signinStatus,
+      LoginStatus? loginStatus,
+      bool? userIsLogged}) {
     return AccountState(
         loginStatus: loginStatus ?? this.loginStatus,
-        signinStatus: signinStatus ?? this.signinStatus);
+        signinStatus: signinStatus ?? this.signinStatus,
+        userIsLogged: userIsLogged ?? this.userIsLogged);
   }
 }

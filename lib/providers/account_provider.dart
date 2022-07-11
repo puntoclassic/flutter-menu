@@ -8,7 +8,9 @@ import '../models/provider_states/account_state.dart';
 class AccountNotifier extends StateNotifier<AccountState> {
   AccountNotifier()
       : super(AccountState(
-            loginStatus: LoginStatus.none, signinStatus: SigninStatus.none));
+            loginStatus: LoginStatus.none,
+            signinStatus: SigninStatus.none,
+            userIsLogged: false));
 
   login({String email = "", String password = ""}) async {
     state = state.copyWith(loginStatus: LoginStatus.pending);
@@ -21,7 +23,7 @@ class AccountNotifier extends StateNotifier<AccountState> {
 
       Map<String, dynamic> accessPayload = Jwt.parseJwt(request.data["access"]);
 
-      state = state.copyWith(loginStatus: LoginStatus.ok);
+      state = state.copyWith(loginStatus: LoginStatus.ok, userIsLogged: true);
     } on DioError {
       state = state.copyWith(loginStatus: LoginStatus.badLogin);
     }
