@@ -39,11 +39,13 @@ class LoginScreen extends ConsumerWidget {
         });
         break;
       case LoginStatus.badLogin:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Nome utente o password errata"),
-          ),
-        );
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Nome utente o password errata"),
+            ),
+          );
+        });
         break;
     }
 

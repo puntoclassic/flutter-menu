@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         '/account': (context) => const AccountScreen(),
         '/account/signin': (context) => SigninScreen(),
         '/account/login': (context) => const LoginScreen(),
-        '/account/verifica-account': (context) =>
+        '/account/verificaAccount': (context) =>
             const AccountNotVerifiedScreen()
       },
     );

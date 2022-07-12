@@ -10,6 +10,8 @@ class AccountScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userIsLogged =
         ref.watch(accountProvider.select((value) => value.userIsLogged));
+    final userIsVerified =
+        ref.watch(accountProvider.select((value) => value.userIsVerified));
     var mainContent = const Center(
       child: CircularProgressIndicator(),
     );
@@ -17,6 +19,11 @@ class AccountScreen extends ConsumerWidget {
       mainContent = const Center(
         child: Text("Sei loggato"),
       );
+      if (!userIsVerified) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.pushReplacementNamed(context, '/account/verificaAccount');
+        });
+      }
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.pushReplacementNamed(context, '/account/login');

@@ -12,8 +12,8 @@ class AccountNotifier extends StateNotifier<AccountState> {
     state = state.copyWith(loginStatus: LoginStatus.pending);
 
     try {
-      var request = await Dio().post("$apiBaseUrl/api/user/token/", data: {
-        "username": email,
+      var request = await Dio().post("$apiBaseUrl/api/login/getToken/", data: {
+        "username": email.toLowerCase(),
         "password": password,
       });
 
@@ -38,9 +38,9 @@ class AccountNotifier extends StateNotifier<AccountState> {
     state = state.copyWith(signinStatus: SigninStatus.pending);
 
     try {
-      var request = await Dio().post("$apiBaseUrl/webapi/user/signin/", data: {
-        "email": email,
-        "username": email,
+      var request = await Dio().post("$apiBaseUrl/webapi/signin/", data: {
+        "email": email.toLowerCase(),
+        "username": email.toLowerCase(),
         "password": password,
         "password2": password,
         "first_name": firstname,
@@ -67,6 +67,9 @@ class AccountNotifier extends StateNotifier<AccountState> {
     await Dio().post("$apiBaseUrl/api/login/resendActivationCode/",
         options:
             Options(headers: {"Authorization": "Bearer ${state.accessToken}"}));
+
+    state = state.copyWith(
+        resendActivationCodeStatus: ResendActivationCodeStatus.ok);
   }
 
   activateAccountByCode(String code) async {
@@ -80,11 +83,14 @@ class AccountNotifier extends StateNotifier<AccountState> {
       );
 
       state = state.copyWith(
-          accountVerifyStatus: AccountVerifyStatus.ok, userIsVerified: true);
+          accountVerifyStatus: AccountVerifyStatus.ok,
+          resendActivationCodeStatus: ResendActivationCodeStatus.none,
+          userIsLogged: true,
+          userIsVerified: true);
     } on DioError {
       state = state.copyWith(
-        accountVerifyStatus: AccountVerifyStatus.failed,
-      );
+          accountVerifyStatus: AccountVerifyStatus.failed,
+          resendActivationCodeStatus: ResendActivationCodeStatus.none);
     }
   }
 }

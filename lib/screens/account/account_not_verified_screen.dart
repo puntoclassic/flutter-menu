@@ -30,7 +30,9 @@ class AccountNotVerifiedScreen extends ConsumerWidget {
       case AccountVerifyStatus.none:
         break;
       case AccountVerifyStatus.ok:
-        Navigator.of(context).pushReplacementNamed("/account");
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          Navigator.of(context).pushReplacementNamed("/account");
+        });
         break;
       case AccountVerifyStatus.failed:
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
