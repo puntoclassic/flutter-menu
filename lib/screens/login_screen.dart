@@ -1,52 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:menu/providers/account_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:menu/widgets/login_form.dart';
 import 'package:menu/widgets/menu_body.dart';
 
-import '../models/provider_states/account_state.dart';
+import '../bloc/account_bloc.dart';
 
-class LoginScreen extends ConsumerWidget {
+class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    var loginStatus =
-        ref.watch(accountProvider.select((value) => value.loginStatus));
-
-    Widget content = LoginForm();
-
-    switch (loginStatus) {
-      case LoginStatus.none:
-        break;
-      case LoginStatus.ok:
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          Navigator.pushReplacementNamed(context, "/account");
-        });
-        break;
-      case LoginStatus.pending:
-        content = const Center(
-          child: CircularProgressIndicator(),
-        );
-        break;
-      case LoginStatus.error:
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Si è verificato un errore inaspettato"),
-            ),
-          );
-        });
-        break;
-      case LoginStatus.badLogin:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Nome utente o password errata"),
-          ),
-        );
-        break;
-    }
-
+  Widget build(BuildContext context) {
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: SafeArea(
@@ -57,7 +20,38 @@ class LoginScreen extends ConsumerWidget {
           ),
           body: Padding(
             padding: const EdgeInsets.only(top: 16),
-            child: MenuBody(child: content),
+            child: MenuBody(
+              child: BlocConsumer<AccountBloc, AccountState>(
+                  builder: (context, state) {
+                return LoginForm();
+              }, listener: (context, state) {
+                if (state is AccountLoginRequestState) {
+                  if (state.status == LoginStatus.badLogin) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Nome utente o password errata"),
+                      ),
+                    );
+                  }
+
+                  if (state.status == LoginStatus.ok) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Accesso effettuato"),
+                      ),
+                    );
+                  }
+
+                  if (state.status == LoginStatus.error) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Si è verificato un errore inaspettato"),
+                      ),
+                    );
+                  }
+                }
+              }),
+            ),
           ),
         ),
       ),

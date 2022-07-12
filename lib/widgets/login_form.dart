@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:menu/bloc/account_bloc.dart';
 
-import '../providers/account_provider.dart';
-
-class LoginForm extends ConsumerWidget {
+class LoginForm extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
 
   final emailController = TextEditingController();
@@ -12,7 +11,7 @@ class LoginForm extends ConsumerWidget {
   LoginForm({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Center(
       child: Container(
         padding: const EdgeInsets.all(32),
@@ -27,6 +26,7 @@ class LoginForm extends ConsumerWidget {
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
                   labelText: 'Email',
+                  filled: true,
                 ),
                 // The validator receives the text that the user has entered.
                 validator: (value) {
@@ -41,6 +41,7 @@ class LoginForm extends ConsumerWidget {
                 decoration: const InputDecoration(
                   border: UnderlineInputBorder(),
                   labelText: 'Password',
+                  filled: true,
                 ),
                 obscureText: true,
                 // The validator receives the text that the user has entered.
@@ -67,7 +68,9 @@ class LoginForm extends ConsumerWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      ref.read(accountProvider.notifier).signinReset();
+                      context
+                          .read<AccountBloc>()
+                          .add(AccountSigninResetEvent());
                       Navigator.pushNamed(context, "/account/signin");
                     },
                     child: const Text("Crea account"),
@@ -75,9 +78,12 @@ class LoginForm extends ConsumerWidget {
                   OutlinedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        ref.read(accountProvider.notifier).login(
-                            email: emailController.text,
-                            password: passwordController.text);
+                        context.read<AccountBloc>().add(
+                              AccountLoginRequestEvent(
+                                email: emailController.text,
+                                password: passwordController.text,
+                              ),
+                            );
                       }
                     },
                     child: const Text("Accedi"),
