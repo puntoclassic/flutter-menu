@@ -39,6 +39,7 @@ dependencies:
   jwt_decode: ^0.3.1
   bloc: ^8.0.3
   flutter_bloc: ^8.0.1
+  hooks_riverpod: ^1.0.4
 
 dev_dependencies:
   flutter_test:

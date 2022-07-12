@@ -1,12 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:menu/providers/account_provider.dart';
+import 'package:menu/widgets/forms/verify_account_form.dart';
 
+import '../../models/provider_states/account_state.dart';
 import '../../widgets/menu_body.dart';
 
-class AccountNotVerifiedScreen extends StatelessWidget {
+class AccountNotVerifiedScreen extends ConsumerWidget {
   const AccountNotVerifiedScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    var resendActivationCodeStatus = ref.watch(
+        accountProvider.select((value) => value.resendActivationCodeStatus));
+    var accountVerifyStatus =
+        ref.watch(accountProvider.select((value) => value.accountVerifyStatus));
+
+    if (resendActivationCodeStatus == ResendActivationCodeStatus.ok) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Richiesta inviata, controlla la tua email"),
+          ),
+        );
+      });
+    }
+
+    switch (accountVerifyStatus) {
+      case AccountVerifyStatus.none:
+        break;
+      case AccountVerifyStatus.ok:
+        Navigator.of(context).pushReplacementNamed("/account");
+        break;
+      case AccountVerifyStatus.failed:
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content:
+                  Text("Impossibile verificare il tuo account, codice errato."),
+            ),
+          );
+        });
+        break;
+    }
+
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: SafeArea(
@@ -27,23 +64,7 @@ class AccountNotVerifiedScreen extends StatelessWidget {
                     children: [
                       const Text(
                           "Il tuo account è attivo ma deve essere verificato, inserisci il codice di attivazione che ti abbiamo inviato via email."),
-                      Form(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextButton(
-                                onPressed: () {},
-                                child: const Text("Reinvia codice")),
-                            TextFormField(
-                              decoration: InputDecoration(
-                                  label: Text("Codice di attivazione")),
-                            ),
-                            OutlinedButton(
-                                onPressed: () {}, child: Text("Attiva")),
-                          ],
-                        ),
-                      )
+                      VerifyAccountForm()
                     ],
                   ),
                 ),
