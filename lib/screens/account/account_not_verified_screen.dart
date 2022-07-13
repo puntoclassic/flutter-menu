@@ -13,8 +13,8 @@ class AccountNotVerifiedScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     var resendActivationCodeStatus = ref.watch(
         accountProvider.select((value) => value.resendActivationCodeStatus));
-    var accountVerifyStatus =
-        ref.watch(accountProvider.select((value) => value.accountVerifyStatus));
+    var loginStatus =
+        ref.watch(accountProvider.select((value) => value.loginStatus));
 
     if (resendActivationCodeStatus == ResendActivationCodeStatus.ok) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -26,15 +26,28 @@ class AccountNotVerifiedScreen extends ConsumerWidget {
       });
     }
 
-    switch (accountVerifyStatus) {
-      case AccountVerifyStatus.none:
+    switch (loginStatus) {
+      case LoginStatus.none:
+        // TODO: Handle this case.
         break;
-      case AccountVerifyStatus.ok:
+      case LoginStatus.ok:
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           Navigator.of(context).pushReplacementNamed("/account");
         });
         break;
-      case AccountVerifyStatus.failed:
+      case LoginStatus.pending:
+        // TODO: Handle this case.
+        break;
+      case LoginStatus.error:
+        // TODO: Handle this case.
+        break;
+      case LoginStatus.badLogin:
+        // TODO: Handle this case.
+        break;
+      case LoginStatus.notVerified:
+        // TODO: Handle this case.
+        break;
+      case LoginStatus.verificationFailed:
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

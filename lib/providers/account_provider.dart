@@ -4,9 +4,14 @@ import 'package:jwt_decode/jwt_decode.dart';
 
 import '../app_options.dart';
 import '../models/provider_states/account_state.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AccountNotifier extends StateNotifier<AccountState> {
-  AccountNotifier() : super(AccountState());
+  final storage = const FlutterSecureStorage();
+
+  AccountNotifier() : super(AccountState()) {
+    refreshToken();
+  }
 
   login({String email = "", String password = ""}) async {
     state = state.copyWith(loginStatus: LoginStatus.pending);
@@ -19,15 +24,50 @@ class AccountNotifier extends StateNotifier<AccountState> {
 
       Map<String, dynamic> accessPayload = Jwt.parseJwt(request.data["access"]);
 
+      await storage.write(key: "accessToken", value: request.data["access"]);
+      await storage.write(key: "refreshToken", value: request.data["refresh"]);
+
       state = state.copyWith(
-          loginStatus: LoginStatus.ok,
-          userIsLogged: true,
-          accessToken: request.data["access"],
-          refreshToken: request.data["refresh"],
-          userIsVerified: accessPayload["verified"]);
+        loginStatus: accessPayload["verified"] == true
+            ? LoginStatus.ok
+            : LoginStatus.notVerified,
+      );
+
+      refreshToken();
     } on DioError {
       state = state.copyWith(loginStatus: LoginStatus.badLogin);
     }
+  }
+
+  refreshToken() async {
+    String? refreshTokenValue = await storage.read(key: "refreshToken");
+    String? accessTokenValue = await storage.read(key: "accessToken");
+
+    if (refreshTokenValue != null && accessTokenValue != null) {
+      var request = await Dio().post("$apiBaseUrl/api/login/refreshToken/",
+          data: {"refresh": refreshTokenValue});
+      if (request.data["access"] != null) {
+        await storage.write(key: "accessToken", value: request.data["access"]);
+
+        state = state.copyWith(
+          loginStatus: LoginStatus.ok,
+        );
+        return "";
+      }
+    }
+
+    print("Emetto lo stato di non loggato");
+
+    state = state.copyWith(
+      loginStatus: LoginStatus.none,
+    );
+  }
+
+  logout() async {
+    await storage.delete(key: "refreshToken");
+    await storage.delete(key: "accessToken");
+
+    state = state.copyWith(loginStatus: LoginStatus.none);
   }
 
   signin(
@@ -64,32 +104,35 @@ class AccountNotifier extends StateNotifier<AccountState> {
   }
 
   resendActivationEmailCode() async {
+    String? accessTokenValue = await storage.read(key: "accessToken");
+
     await Dio().post("$apiBaseUrl/api/login/resendActivationCode/",
         options:
-            Options(headers: {"Authorization": "Bearer ${state.accessToken}"}));
+            Options(headers: {"Authorization": "Bearer $accessTokenValue"}));
 
     state = state.copyWith(
         resendActivationCodeStatus: ResendActivationCodeStatus.ok);
   }
 
   activateAccountByCode(String code) async {
+    String? accessTokenValue = await storage.read(key: "accessToken");
+
     try {
       await Dio().post(
         "$apiBaseUrl/api/login/verifyAccount/",
         data: {"code": code},
         options: Options(
-          headers: {"Authorization": "Bearer ${state.accessToken}"},
+          headers: {"Authorization": "Bearer $accessTokenValue"},
         ),
       );
 
       state = state.copyWith(
-          accountVerifyStatus: AccountVerifyStatus.ok,
-          resendActivationCodeStatus: ResendActivationCodeStatus.none,
-          userIsLogged: true,
-          userIsVerified: true);
+        loginStatus: LoginStatus.ok,
+        resendActivationCodeStatus: ResendActivationCodeStatus.none,
+      );
     } on DioError {
       state = state.copyWith(
-          accountVerifyStatus: AccountVerifyStatus.failed,
+          loginStatus: LoginStatus.verificationFailed,
           resendActivationCodeStatus: ResendActivationCodeStatus.none);
     }
   }

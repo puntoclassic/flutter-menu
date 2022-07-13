@@ -3,31 +3,163 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:menu/providers/account_provider.dart';
 import 'package:menu/widgets/menu_body.dart';
 
+import '../models/provider_states/account_state.dart';
+
 class AccountScreen extends ConsumerWidget {
   const AccountScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userIsLogged =
-        ref.watch(accountProvider.select((value) => value.userIsLogged));
-    final userIsVerified =
-        ref.watch(accountProvider.select((value) => value.userIsVerified));
-    var mainContent = const Center(
-      child: CircularProgressIndicator(),
+    final loginStatus =
+        ref.watch(accountProvider.select((value) => value.loginStatus));
+
+    Widget? loginButton = Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).pushNamed("/account/login");
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: const [
+              Icon(Icons.login),
+              Padding(
+                padding: EdgeInsets.only(left: 8),
+                child: Text("Accedi"),
+              )
+            ],
+          ),
+        ),
+      ),
     );
-    if (userIsLogged) {
-      mainContent = const Center(
-        child: Text("Sei loggato"),
-      );
-      if (!userIsVerified) {
+
+    Widget? signinButton = Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).pushNamed("/account/signin");
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: const [
+              Icon(Icons.account_box),
+              Padding(
+                padding: EdgeInsets.only(left: 8),
+                child: Text("Crea account"),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+
+    Column? manageMenu = Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: const BoxDecoration(border: Border(bottom: BorderSide())),
+          child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [
+                Padding(
+                  padding: EdgeInsets.only(left: 8),
+                  child: Text("GESTIONE"),
+                )
+              ]),
+        ),
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {},
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: const [
+                  Icon(Icons.display_settings),
+                  Padding(
+                    padding: EdgeInsets.only(left: 8),
+                    child: Text("Le mie informazioni"),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {},
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: const [
+                    Icon(Icons.shopping_bag),
+                    Padding(
+                      padding: EdgeInsets.only(left: 8),
+                      child: Text("I miei ordini"),
+                    )
+                  ]),
+            ),
+          ),
+        ),
+      ],
+    );
+
+    Widget logoutButton = Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          ref.read(accountProvider.notifier).logout();
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: const [
+              Icon(Icons.logout),
+              Padding(
+                padding: EdgeInsets.only(left: 8),
+                child: Text("Logout"),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+
+    switch (loginStatus) {
+      case LoginStatus.none:
+        manageMenu = Column();
+        logoutButton = Container();
+        break;
+      case LoginStatus.ok:
+        signinButton = Column();
+        loginButton = Column();
+        break;
+      case LoginStatus.pending:
+        // TODO: Handle this case.
+        logoutButton = Container();
+        break;
+      case LoginStatus.error:
+        // TODO: Handle this case.
+        break;
+      case LoginStatus.badLogin:
+        // TODO: Handle this case.
+        break;
+      case LoginStatus.notVerified:
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Navigator.pushReplacementNamed(context, '/account/verificaAccount');
         });
-      }
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushReplacementNamed(context, '/account/login');
-      });
+        break;
+      case LoginStatus.verificationFailed:
+        // TODO: Handle this case.
+        break;
     }
 
     return Container(
@@ -41,7 +173,81 @@ class AccountScreen extends ConsumerWidget {
           body: Padding(
             padding: const EdgeInsets.only(top: 16),
             child: MenuBody(
-              child: mainContent,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: const BoxDecoration(
+                          border: Border(bottom: BorderSide())),
+                      child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: const [
+                            Padding(
+                              padding: EdgeInsets.only(left: 8),
+                              child: Text("ACCOUNT"),
+                            )
+                          ]),
+                    ),
+                    loginButton,
+                    signinButton,
+                    logoutButton,
+                    manageMenu,
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: const BoxDecoration(
+                          border: Border(bottom: BorderSide())),
+                      child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: const [
+                            Padding(
+                              padding: EdgeInsets.only(left: 8),
+                              child: Text("APP"),
+                            )
+                          ]),
+                    ),
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {},
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.privacy_tip),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8),
+                                  child: Text("Privacy app"),
+                                )
+                              ]),
+                        ),
+                      ),
+                    ),
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {},
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.settings),
+                                Padding(
+                                  padding: EdgeInsets.only(left: 8),
+                                  child: Text("Impostazioni"),
+                                )
+                              ]),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),

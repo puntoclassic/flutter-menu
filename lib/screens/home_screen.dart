@@ -14,40 +14,36 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.read(categoryProvider.notifier).fetchHomeCategories();
 
-    return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: SafeArea(
-        bottom: false,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const MenuAppBarHeader(),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.account_circle_outlined),
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/account');
-                },
-              )
-            ],
-          ),
-          body: Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: MenuBody(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(
-                      "In evidenza",
-                      style: GoogleFonts.mulish(),
-                    ),
-                  ),
-                  const HomeCategoryContent()
-                ],
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 80,
+        title: const MenuAppBarHeader(),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.account_circle_outlined),
+            onPressed: () {
+              Navigator.of(context).pushNamed('/account');
+            },
+          )
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 16),
+        child: MenuBody(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  "In evidenza",
+                  style: GoogleFonts.mulish(),
+                ),
               ),
-            ),
+              const HomeCategoryContent()
+            ],
           ),
         ),
       ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:menu/providers/account_provider.dart';
 
@@ -42,7 +41,7 @@ class VerifyAccountForm extends ConsumerWidget {
                     .activateAccountByCode(_codeController.text);
               }
             },
-            child: Text("Attiva"),
+            child: const Text("Attiva"),
           ),
         ],
       ),

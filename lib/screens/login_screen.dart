@@ -21,7 +21,7 @@ class LoginScreen extends ConsumerWidget {
         break;
       case LoginStatus.ok:
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          Navigator.pushReplacementNamed(context, "/account");
+          Navigator.of(context).pop();
         });
         break;
       case LoginStatus.pending:
@@ -46,6 +46,12 @@ class LoginScreen extends ConsumerWidget {
             ),
           );
         });
+        break;
+      case LoginStatus.notVerified:
+        // TODO: Handle this case.
+        break;
+      case LoginStatus.verificationFailed:
+        // TODO: Handle this case.
         break;
     }
 
