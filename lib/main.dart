@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:menu/screens/account/account_not_verified_screen.dart';
 import 'package:menu/screens/account_screen.dart';
+import 'package:menu/screens/cart_screen.dart';
 import 'package:menu/screens/category_screen.dart';
 import 'package:menu/screens/home_screen.dart';
 import 'package:menu/screens/login_screen.dart';
@@ -37,7 +38,8 @@ class MyApp extends StatelessWidget {
         '/account/signin': (context) => SigninScreen(),
         '/account/login': (context) => const LoginScreen(),
         '/account/verificaAccount': (context) =>
-            const AccountNotVerifiedScreen()
+            const AccountNotVerifiedScreen(),
+        '/cart': (context) => const CartScreen(),
       },
     );
   }

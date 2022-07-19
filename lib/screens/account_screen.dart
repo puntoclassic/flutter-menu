@@ -143,14 +143,11 @@ class AccountScreen extends ConsumerWidget {
         loginButton = Column();
         break;
       case LoginStatus.pending:
-        // TODO: Handle this case.
         logoutButton = Container();
         break;
       case LoginStatus.error:
-        // TODO: Handle this case.
         break;
       case LoginStatus.badLogin:
-        // TODO: Handle this case.
         break;
       case LoginStatus.notVerified:
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -158,7 +155,6 @@ class AccountScreen extends ConsumerWidget {
         });
         break;
       case LoginStatus.verificationFailed:
-        // TODO: Handle this case.
         break;
     }
 

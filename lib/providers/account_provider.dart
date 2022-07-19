@@ -8,16 +8,52 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AccountNotifier extends StateNotifier<AccountState> {
   final storage = const FlutterSecureStorage();
+  final authApi = Dio();
+  final simpleApi = Dio();
 
   AccountNotifier() : super(AccountState()) {
     refreshToken();
+    initDio();
+  }
+
+  initDio() async {
+    simpleApi.options.baseUrl = apiBaseUrl;
+    authApi.options.baseUrl = apiBaseUrl;
+
+    authApi.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        var accessTokenValue = await storage.read(key: "accessToken");
+
+        options.headers['Authorization'] = 'Bearer $accessTokenValue';
+        return handler.next(options);
+      },
+      onError: (DioError error, handler) async {
+        if (error.response?.statusCode == 401) {
+          if (await refreshToken()) {
+            return handler.resolve(await _retry(error.requestOptions));
+          }
+        }
+        return handler.next(error);
+      },
+    ));
+  }
+
+  Future<Response<dynamic>> _retry(RequestOptions requestOptions) async {
+    final options = Options(
+      method: requestOptions.method,
+      headers: requestOptions.headers,
+    );
+    return authApi.request<dynamic>(requestOptions.path,
+        data: requestOptions.data,
+        queryParameters: requestOptions.queryParameters,
+        options: options);
   }
 
   login({String email = "", String password = ""}) async {
     state = state.copyWith(loginStatus: LoginStatus.pending);
 
     try {
-      var request = await Dio().post("$apiBaseUrl/api/login/getToken/", data: {
+      var request = await simpleApi.post("/api/login/getToken/", data: {
         "username": email.toLowerCase(),
         "password": password,
       });
@@ -32,35 +68,32 @@ class AccountNotifier extends StateNotifier<AccountState> {
             ? LoginStatus.ok
             : LoginStatus.notVerified,
       );
-
-      refreshToken();
     } on DioError {
-      state = state.copyWith(loginStatus: LoginStatus.badLogin);
+      logout();
     }
   }
 
-  refreshToken() async {
+  Future<bool> refreshToken() async {
     String? refreshTokenValue = await storage.read(key: "refreshToken");
-    String? accessTokenValue = await storage.read(key: "accessToken");
 
-    if (refreshTokenValue != null && accessTokenValue != null) {
-      var request = await Dio().post("$apiBaseUrl/api/login/refreshToken/",
-          data: {"refresh": refreshTokenValue});
-      if (request.data["access"] != null) {
-        await storage.write(key: "accessToken", value: request.data["access"]);
+    if (refreshTokenValue != null) {
+      try {
+        var request = await simpleApi.post("/api/login/refreshToken/",
+            data: {"refresh": refreshTokenValue});
+        if (request.data["access"] != null) {
+          await storage.write(
+              key: "accessToken", value: request.data["access"]);
 
-        state = state.copyWith(
-          loginStatus: LoginStatus.ok,
-        );
-        return "";
+          state = state.copyWith(loginStatus: LoginStatus.ok);
+
+          return true;
+        }
+      } on DioError {
+        state = state.copyWith(loginStatus: LoginStatus.none);
       }
     }
 
-    print("Emetto lo stato di non loggato");
-
-    state = state.copyWith(
-      loginStatus: LoginStatus.none,
-    );
+    return false;
   }
 
   logout() async {
@@ -78,7 +111,7 @@ class AccountNotifier extends StateNotifier<AccountState> {
     state = state.copyWith(signinStatus: SigninStatus.pending);
 
     try {
-      var request = await Dio().post("$apiBaseUrl/webapi/signin/", data: {
+      var request = await simpleApi.post("/api/signin/", data: {
         "email": email.toLowerCase(),
         "username": email.toLowerCase(),
         "password": password,
@@ -104,26 +137,17 @@ class AccountNotifier extends StateNotifier<AccountState> {
   }
 
   resendActivationEmailCode() async {
-    String? accessTokenValue = await storage.read(key: "accessToken");
-
-    await Dio().post("$apiBaseUrl/api/login/resendActivationCode/",
-        options:
-            Options(headers: {"Authorization": "Bearer $accessTokenValue"}));
+    await authApi.post("/api/login/resendActivationCode/");
 
     state = state.copyWith(
         resendActivationCodeStatus: ResendActivationCodeStatus.ok);
   }
 
   activateAccountByCode(String code) async {
-    String? accessTokenValue = await storage.read(key: "accessToken");
-
     try {
       await Dio().post(
-        "$apiBaseUrl/api/login/verifyAccount/",
+        "/api/login/verifyAccount/",
         data: {"code": code},
-        options: Options(
-          headers: {"Authorization": "Bearer $accessTokenValue"},
-        ),
       );
 
       state = state.copyWith(

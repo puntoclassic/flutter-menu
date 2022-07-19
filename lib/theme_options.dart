@@ -21,6 +21,10 @@ var appLightTheme = ThemeData(
   scaffoldBackgroundColor: colorSchemeLight.background,
   colorScheme: colorSchemeLight,
   progressIndicatorTheme: const ProgressIndicatorThemeData(color: Colors.black),
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    backgroundColor: Colors.black,
+    foregroundColor: Colors.white,
+  ),
   appBarTheme: AppBarTheme(
     titleTextStyle: const TextStyle(color: Colors.white),
     elevation: 0,
@@ -42,6 +46,10 @@ var appDarkTheme = ThemeData(
     elevation: 0,
     backgroundColor: colorSchemeDark.background,
     systemOverlayStyle: SystemUiOverlayStyle.light,
+  ),
+  floatingActionButtonTheme: FloatingActionButtonThemeData(
+    backgroundColor: primaryColorDark,
+    foregroundColor: Colors.white,
   ),
   primaryColor: colorSchemeDark.primary,
   textTheme: const TextTheme(

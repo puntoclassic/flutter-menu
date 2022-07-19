@@ -28,7 +28,6 @@ class AccountNotVerifiedScreen extends ConsumerWidget {
 
     switch (loginStatus) {
       case LoginStatus.none:
-        // TODO: Handle this case.
         break;
       case LoginStatus.ok:
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -36,16 +35,12 @@ class AccountNotVerifiedScreen extends ConsumerWidget {
         });
         break;
       case LoginStatus.pending:
-        // TODO: Handle this case.
         break;
       case LoginStatus.error:
-        // TODO: Handle this case.
         break;
       case LoginStatus.badLogin:
-        // TODO: Handle this case.
         break;
       case LoginStatus.notVerified:
-        // TODO: Handle this case.
         break;
       case LoginStatus.verificationFailed:
         WidgetsBinding.instance.addPostFrameCallback((timeStamp) {

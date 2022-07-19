@@ -48,10 +48,8 @@ class LoginScreen extends ConsumerWidget {
         });
         break;
       case LoginStatus.notVerified:
-        // TODO: Handle this case.
         break;
       case LoginStatus.verificationFailed:
-        // TODO: Handle this case.
         break;
     }
 

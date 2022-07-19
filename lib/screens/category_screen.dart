@@ -32,6 +32,12 @@ class CategoryScreen extends ConsumerWidget {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed("/cart");
+        },
+        child: const Icon(Icons.shopping_bag),
+      ),
     );
   }
 }
@@ -59,8 +65,8 @@ class CategoryScreenBody extends ConsumerWidget {
                   return SizedBox(
                     height: 50,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
                           child: Column(
@@ -80,15 +86,10 @@ class CategoryScreenBody extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [Text("${items.elementAt(index).price} €")],
                         ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.add_shopping_cart),
-                            )
-                          ],
+                        IconButton(
+                          alignment: Alignment.centerRight,
+                          onPressed: () {},
+                          icon: const Icon(Icons.add_shopping_cart),
                         )
                       ],
                     ),
