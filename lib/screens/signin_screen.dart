@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:menu/bloc/account_bloc.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:menu/providers/account_provider.dart';
 import 'package:menu/widgets/menu_body.dart';
 
-class SigninScreen extends StatelessWidget {
+import '../models/provider_states/account_state.dart';
+
+class SigninScreen extends ConsumerWidget {
   SigninScreen({Key? key}) : super(key: key);
 
   final _formKey = GlobalKey<FormState>();
@@ -13,62 +15,53 @@ class SigninScreen extends StatelessWidget {
   final passwordController = TextEditingController();
 
   @override
-  Widget build(BuildContext context) {
-    Widget content = signinForm(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final signinRequestState =
+        ref.watch(accountProvider.select((value) => value.signinStatus));
+    Widget content = signinForm(ref);
 
-    return BlocConsumer(
-        listenWhen: (previous, current) =>
-            current is AccountSigninRequestPendingState ||
-            current is AccountSigninRequestResponseState,
-        buildWhen: (previous, current) =>
-            current is AccountSigninRequestPendingState ||
-            current is AccountSigninRequestResponseState,
-        builder: (context, state) {
-          if (state is AccountSigninRequestPendingState) {
-            content = pendingRequest();
-          }
+    switch (signinRequestState) {
+      case SigninStatus.none:
+        break;
+      case SigninStatus.ok:
+        content = signinOk();
+        break;
+      case SigninStatus.pending:
+        content = pendingRequest();
+        break;
+      case SigninStatus.error:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Si è verificato un errore"),
+          ),
+        );
+        break;
+      case SigninStatus.badPassword:
+        break;
+      case SigninStatus.emailBusy:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Email in uso"),
+          ),
+        );
+        break;
+    }
 
-          if (state is AccountSigninRequestResponseState) {
-            if (state.signinStatus == SigninStatus.ok) {
-              content = signinOk();
-            }
-          }
-
-          return Container(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            child: SafeArea(
-              bottom: false,
-              child: Scaffold(
-                appBar: AppBar(
-                  title: const Text("Crea account"),
-                ),
-                body: Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: MenuBody(child: content),
-                ),
-              ),
-            ),
-          );
-        },
-        listener: (context, state) {
-          if (state is AccountSigninRequestResponseState) {
-            if (state.signinStatus == SigninStatus.error) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Si è verificato un errore"),
-                ),
-              );
-            }
-
-            if (state.signinStatus == SigninStatus.emailBusy) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Email in uso"),
-                ),
-              );
-            }
-          }
-        });
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: SafeArea(
+        bottom: false,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text("Crea account"),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: MenuBody(child: content),
+          ),
+        ),
+      ),
+    );
   }
 
   Center signinOk() {
@@ -83,7 +76,7 @@ class SigninScreen extends StatelessWidget {
           ),
           Text(
               textAlign: TextAlign.center,
-              "Il tuo account è stato creato, effettua il login e segui le istruzioni per attivarlo.")
+              "Il tuo account è stato creato, verifica la tua email per attivarlo.")
         ],
       ),
     );
@@ -93,7 +86,7 @@ class SigninScreen extends StatelessWidget {
     return const Center(child: CircularProgressIndicator());
   }
 
-  Center signinForm(BuildContext context) {
+  Center signinForm(WidgetRef ref) {
     return Center(
       child: Container(
         padding: const EdgeInsets.all(32),
@@ -207,14 +200,12 @@ class SigninScreen extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          context
-                              .read<AccountBloc>()
-                              .add(AccountSigninRequestEvent(
+                          ref.read(accountProvider.notifier).signin(
                                 firstname: firstNameController.value.text,
                                 lastname: lastNameController.value.text,
                                 email: emailController.value.text,
                                 password: passwordController.value.text,
-                              ));
+                              );
                         }
                       },
                       child: const Text("Crea account"),

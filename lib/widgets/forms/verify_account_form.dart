@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:menu/providers/account_provider.dart';
 
-import '../../bloc/account_bloc.dart';
-
-class VerifyAccountForm extends StatelessWidget {
+class VerifyAccountForm extends ConsumerWidget {
   final _formKey = GlobalKey<FormState>();
   final _codeController = TextEditingController();
 
   VerifyAccountForm({Key? key}) : super(key: key);
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Form(
       key: _formKey,
       child: Column(
@@ -20,9 +17,7 @@ class VerifyAccountForm extends StatelessWidget {
         children: [
           TextButton(
               onPressed: () {
-                context
-                    .read<AccountBloc>()
-                    .add(AccountResendActivationEmailCodeRequestEvent());
+                ref.read(accountProvider.notifier).resendActivationEmailCode();
               },
               child: const Text("Reinvia codice")),
           TextFormField(
@@ -41,8 +36,9 @@ class VerifyAccountForm extends StatelessWidget {
             style: ElevatedButton.styleFrom(primary: Colors.green),
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                context.read<AccountBloc>().add(
-                    AccountActivateByCodeEvent(code: _codeController.text));
+                ref
+                    .read(accountProvider.notifier)
+                    .activateAccountByCode(_codeController.text);
               }
             },
             child: const Text("Attiva"),

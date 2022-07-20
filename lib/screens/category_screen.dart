@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:menu/bloc/food_bloc.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:menu/models/category_item.dart';
+import 'package:menu/providers/food_provider.dart';
 import 'package:menu/widgets/menu_body.dart';
 
 import '../widgets/category_screen_header.dart';
 
-class CategoryScreen extends StatelessWidget {
+class CategoryScreen extends ConsumerWidget {
   const CategoryScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     CategoryItem categoryItem =
         ModalRoute.of(context)!.settings.arguments as CategoryItem;
 
-    context.read<FoodBloc>().add(
-          FoodFetchByCategoryEvent(
-            categoryId: categoryItem.id.toString(),
-          ),
-        );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(foodProvider.notifier)
+          .fetchFoodsByCategory(categoryItem.id.toString());
+    });
 
     return Scaffold(
       body: MenuBody(
@@ -42,7 +42,7 @@ class CategoryScreen extends StatelessWidget {
   }
 }
 
-class CategoryScreenBody extends StatelessWidget {
+class CategoryScreenBody extends ConsumerWidget {
   const CategoryScreenBody({
     Key? key,
     required this.categoryItem,
@@ -50,77 +50,64 @@ class CategoryScreenBody extends StatelessWidget {
 
   final CategoryItem categoryItem;
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<FoodBloc, FoodState>(
-      builder: (context, state) {
-        if (state is FoodsFetchByCategoryResponseState) {
-          if (state.foods.isNotEmpty) {
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: CustomScrollView(
-                slivers: [
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        return SizedBox(
-                          height: 50,
-                          child: Row(
+  Widget build(BuildContext context, WidgetRef ref) {
+    var items =
+        ref.watch(foodProvider.select((value) => value.foodsByCategory));
+
+    if (items.isNotEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: CustomScrollView(
+          slivers: [
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  return SizedBox(
+                    height: 50,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(state.foods.elementAt(index).name),
-                                    Text(
-                                      state.foods.elementAt(index).ingredients,
-                                      style: GoogleFonts.gentiumBasic(
-                                          fontSize: 12),
-                                    )
-                                  ],
-                                ),
-                              ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                      "${state.foods.elementAt(index).price} €")
-                                ],
-                              ),
-                              IconButton(
-                                alignment: Alignment.centerRight,
-                                onPressed: () {},
-                                icon: const Icon(Icons.add_shopping_cart),
+                              Text(items.elementAt(index).name),
+                              Text(
+                                items.elementAt(index).ingredients,
+                                style: GoogleFonts.gentiumBasic(fontSize: 12),
                               )
                             ],
                           ),
-                        );
-                      },
-                      childCount: state.foods.length,
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [Text("${items.elementAt(index).price} €")],
+                        ),
+                        IconButton(
+                          alignment: Alignment.centerRight,
+                          onPressed: () {},
+                          icon: const Icon(Icons.add_shopping_cart),
+                        )
+                      ],
                     ),
-                  )
-                ],
+                  );
+                },
+                childCount: items.length,
               ),
-            );
-          } else {
-            return const Padding(
-              padding: EdgeInsets.all(16),
-              child:
-                  Center(child: Text("Non ci sono cibi per questa categoria")),
-            );
-          }
-        }
-
-        return const Padding(
-          padding: EdgeInsets.all(16),
-          child: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-      },
-    );
+            )
+          ],
+        ),
+      );
+    } else {
+      return const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
   }
 }
