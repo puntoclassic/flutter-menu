@@ -1,72 +1,70 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:menu/providers/account_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:menu/bloc/account_bloc.dart';
 import 'package:menu/widgets/menu_body.dart';
 
-import '../models/provider_states/account_state.dart';
 import '../widgets/forms/login_form.dart';
 
-class LoginScreen extends ConsumerWidget {
+class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    var loginStatus =
-        ref.watch(accountProvider.select((value) => value.loginStatus));
+  Widget build(BuildContext context) {
+    return BlocConsumer(
+        listenWhen: (previous, current) =>
+            current is AccountLoginRequestPendingState ||
+            current is AccountLoginRequestResponseState,
+        buildWhen: (previous, current) =>
+            current is AccountLoginRequestPendingState ||
+            current is AccountLoginRequestResponseState,
+        builder: (context, state) {
+          Widget content = LoginForm();
 
-    Widget content = LoginForm();
+          if (state is AccountLoginRequestPendingState) {
+            content = const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
 
-    switch (loginStatus) {
-      case LoginStatus.none:
-        break;
-      case LoginStatus.ok:
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          Navigator.of(context).pop();
-        });
-        break;
-      case LoginStatus.pending:
-        content = const Center(
-          child: CircularProgressIndicator(),
-        );
-        break;
-      case LoginStatus.error:
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Si è verificato un errore inaspettato"),
+          return Container(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: SafeArea(
+              bottom: false,
+              child: Scaffold(
+                appBar: AppBar(
+                  title: const Text("Accedi"),
+                ),
+                body: Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: MenuBody(child: content),
+                ),
+              ),
             ),
           );
+        },
+        listener: (context, state) {
+          if (state is AccountLoginRequestResponseState) {
+            var loginStatus = state.loginStatus;
+            switch (loginStatus) {
+              case LoginStatus.ok:
+                Navigator.of(context).pop();
+                break;
+              case LoginStatus.error:
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Si è verificato un errore inaspettato"),
+                  ),
+                );
+                break;
+              case LoginStatus.badLogin:
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Nome utente o password errata"),
+                  ),
+                );
+                break;
+            }
+          }
         });
-        break;
-      case LoginStatus.badLogin:
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Nome utente o password errata"),
-            ),
-          );
-        });
-        break;
-      case LoginStatus.notVerified:
-        break;
-      case LoginStatus.verificationFailed:
-        break;
-    }
-
-    return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: SafeArea(
-        bottom: false,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text("Accedi"),
-          ),
-          body: Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: MenuBody(child: content),
-          ),
-        ),
-      ),
-    );
   }
 }

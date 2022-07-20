@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:menu/providers/account_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class LoginForm extends ConsumerWidget {
+import '../../bloc/account_bloc.dart';
+
+class LoginForm extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
 
   final emailController = TextEditingController();
@@ -11,7 +12,7 @@ class LoginForm extends ConsumerWidget {
   LoginForm({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Center(
       child: Container(
         padding: const EdgeInsets.all(32),
@@ -68,7 +69,9 @@ class LoginForm extends ConsumerWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      ref.read(accountProvider.notifier).signinReset();
+                      context
+                          .read<AccountBloc>()
+                          .add(AccountSigninRequestResetEvent());
                       Navigator.pushNamed(context, "/account/signin");
                     },
                     child: const Text("Crea account"),
@@ -76,10 +79,12 @@ class LoginForm extends ConsumerWidget {
                   OutlinedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        ref.read(accountProvider.notifier).login(
+                        context
+                            .read<AccountBloc>()
+                            .add(AccountLoginRequestEvent(
                               email: emailController.text,
                               password: passwordController.text,
-                            );
+                            ));
                       }
                     },
                     child: const Text("Accedi"),
