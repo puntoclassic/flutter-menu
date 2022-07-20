@@ -1,12 +1,16 @@
 class CartItem {
   int? id;
   String? name;
-  double? price;
-  int? quantity;
+  double unitPrice;
+  int quantity;
+
+  double price() {
+    return unitPrice * quantity;
+  }
 
   CartItem(
       {required this.name,
-      required this.price,
       required this.quantity,
-      required this.id});
+      required this.id,
+      required this.unitPrice});
 }

@@ -33,7 +33,11 @@ class HomeScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: const [Expanded(child: HomeCategoryContent())],
+            children: const [
+              Expanded(
+                child: HomeCategoryContent(),
+              ),
+            ],
           ),
         ),
       ),
