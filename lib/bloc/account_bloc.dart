@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:jwt_decode/jwt_decode.dart';
 import 'package:meta/meta.dart';
 
 import '../app_options.dart';
@@ -65,7 +64,6 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
 
   AccountBloc() : super(AccountInitial()) {
     simpleApi.options.baseUrl = apiBaseUrl;
-
     authApi.options.baseUrl = apiBaseUrl;
 
     authApi.interceptors.add(InterceptorsWrapper(
@@ -218,5 +216,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
         }
       }
     });
+
+    add(AccountUpdateStatusEvent());
   }
 }

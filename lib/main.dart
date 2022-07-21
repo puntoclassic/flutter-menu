@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:menu/bloc/account_bloc.dart';
 import 'package:menu/bloc/cart_bloc.dart';
 import 'package:menu/bloc/food_bloc.dart';
@@ -24,6 +23,7 @@ void main() {
           create: (context) => CartBloc(),
         ),
         BlocProvider<AccountBloc>(
+          lazy: false,
           create: (context) => AccountBloc(),
         ),
         BlocProvider<FoodBloc>(

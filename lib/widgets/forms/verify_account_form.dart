@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:menu/providers/account_provider.dart';
 
 import '../../bloc/account_bloc.dart';
 

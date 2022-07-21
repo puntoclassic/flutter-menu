@@ -8,10 +8,6 @@ class AccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //var accountStatus = context.watch<AccountBloc>().accountStatus;
-
-    context.read<AccountBloc>().add(AccountUpdateStatusEvent());
-
     return BlocConsumer<AccountBloc, AccountState>(
       builder: (context, state) {
         Widget loginButton = Material(
