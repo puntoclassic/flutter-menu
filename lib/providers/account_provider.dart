@@ -74,16 +74,12 @@ class AccountNotifier extends StateNotifier<AccountState> {
         "password": password,
       });
 
-      Map<String, dynamic> accessPayload = Jwt.parseJwt(request.data["access"]);
-
       await storage.write(key: "accessToken", value: request.data["access"]);
       await storage.write(key: "refreshToken", value: request.data["refresh"]);
 
-      state = state.copyWith(
-          loginStatus: LoginStatus.ok,
-          accountStatus: accessPayload["verified"] == true
-              ? AccountStatus.loggedVerified
-              : AccountStatus.loggedNotVerified);
+      fetchAccountStatus();
+
+      state = state.copyWith(loginStatus: LoginStatus.ok);
     } on DioError {
       logout();
     }
