@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:menu/bloc/account_bloc.dart';
-import 'package:menu/bloc/cart_bloc.dart';
-import 'package:menu/bloc/food_bloc.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:menu/providers/account_provider.dart';
 import 'package:menu/screens/account/account_not_verified_screen.dart';
 import 'package:menu/screens/account_screen.dart';
 import 'package:menu/screens/cart_screen.dart';
@@ -13,37 +11,21 @@ import 'package:menu/screens/signin_screen.dart';
 import 'package:menu/screens/spash_screen.dart';
 import 'package:menu/theme_options.dart';
 
-import 'bloc/category_bloc.dart';
-
 void main() {
   runApp(
-    MultiBlocProvider(
-      providers: [
-        BlocProvider<CartBloc>(
-          create: (context) => CartBloc(),
-        ),
-        BlocProvider<AccountBloc>(
-          lazy: false,
-          create: (context) => AccountBloc(),
-        ),
-        BlocProvider<FoodBloc>(
-          create: (context) => FoodBloc(),
-        ),
-        BlocProvider<CategoryBloc>(
-          create: (context) => CategoryBloc(),
-        ),
-      ],
-      child: const MyApp(),
+    const ProviderScope(
+      child: MyApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.read(accountProvider.notifier).initApp();
     return MaterialApp(
       title: 'Pizzeria Fittizzio',
       debugShowCheckedModeBanner: false,

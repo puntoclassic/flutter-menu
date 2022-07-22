@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:menu/bloc/category_bloc.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:menu/widgets/home_category_content.dart';
 import 'package:menu/widgets/menu_body.dart';
 
+import '../providers/category_provider.dart';
 import '../widgets/menu_appbarheader.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    context.read<CategoryBloc>().add(CategoryFetchHomeCategoriesEvent());
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.read(categoryProvider.notifier).fetchHomeCategories();
 
     return Scaffold(
       appBar: AppBar(
